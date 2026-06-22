@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: kali-academy
+    runtime: node
+    plan: free
+    buildCommand: npm install -g pnpm && pnpm install --no-frozen-lockfile && pnpm run build:render
+    startCommand: node artifacts/api-server/dist/index.js
+    healthCheckPath: /api/healtz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
