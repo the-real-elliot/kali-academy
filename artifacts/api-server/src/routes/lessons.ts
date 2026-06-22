@@ -1,24 +1,27 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { lessonsTable, progressTable } from "@workspace/db";
-import { eq, and, gt, lt } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
 router.get("/lessons/:id", async (req, res) => {
   const id = parseInt(req.params.id);
-  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
 
   const [lesson] = await db.select().from(lessonsTable).where(eq(lessonsTable.id, id));
-  if (!lesson) return res.status(404).json({ error: "Not found" });
+  if (!lesson) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
 
   const completedProgress = await db.select({ lessonId: progressTable.lessonId }).from(progressTable);
   const completedIds = new Set(completedProgress.map((p) => p.lessonId));
 
-  const moduleLessons = await db
-    .select({ id: lessonsTable.id, order: lessonsTable.order })
-    .from(lessonsTable)
-    .where(eq(lessonsTable.moduleId, lesson.moduleId));
+  const moduleLessons = await db.select({ id: lessonsTable.id, order: lessonsTable.order }).from(lessonsTable).where(eq(lessonsTable.moduleId, lesson.moduleId));
 
   moduleLessons.sort((a, b) => a.order - b.order);
   const idx = moduleLessons.findIndex((l) => l.id === id);
