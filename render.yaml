@@ -3,7 +3,7 @@ services:
     name: kali-academy
     runtime: node
     plan: free
-    buildCommand: corepack enable && pnpm install --no-frozen-lockfile && pnpm run build:render
+    buildCommand: npm install -g pnpm --prefix=$HOME && $HOME/bin/pnpm install --no-frozen-lockfile && $HOME/bin/pnpm run build:render
     startCommand: node artifacts/api-server/dist/index.js
     healthCheckPath: /api/healthz
     envVars:
